@@ -5,8 +5,8 @@ import java.util.Scanner;
 // Класс для представления игрового поля
 class GameBoard {
     private final int size;
-    public final boolean[][] horizontalEdges;
-    public final boolean[][] verticalEdges;
+    private final boolean[][] horizontalEdges;
+    private final boolean[][] verticalEdges;
     private final char[][] squares;
 
     public GameBoard(int size) {
@@ -17,10 +17,6 @@ class GameBoard {
     }
 
     public boolean drawEdge(int row, int col, boolean isHorizontal) {
-        if (row == size && col == size) {
-            return false; // Нельзя рисовать в правой нижней точке
-        }
-
         if (isHorizontal) {
             if (row < 0 || row > size || col < 0 || col >= size || horizontalEdges[row][col]) {
                 return false;
@@ -34,7 +30,6 @@ class GameBoard {
         }
         return true;
     }
-
 
     public int checkAndMarkSquares(int row, int col, boolean isHorizontal, char playerSymbol) {
         int completedSquares = 0;
@@ -82,12 +77,12 @@ class GameBoard {
     public void printBoard() {
         for (int i = 0; i <= size; i++) {
             for (int j = 0; j < size; j++) {
-                System.out.print("+" + (i < size && horizontalEdges[i][j] ? "---" : "   "));
+                System.out.print("+" + (i <= size && horizontalEdges[i][j] ? "---" : "   "));
             }
             System.out.println("+");
             if (i < size) {
                 for (int j = 0; j <= size; j++) {
-                    System.out.print((j < size && verticalEdges[i][j] ? "|" : " ") + " " + (j < size && squares[i][j] != '\u0000' ? squares[i][j] : " ") + " ");
+                    System.out.print((j <= size && verticalEdges[i][j] ? "|" : " ") + " " + (j < size && squares[i][j] != '\u0000' ? squares[i][j] : " ") + " ");
                 }
                 System.out.println();
             }
@@ -129,33 +124,33 @@ class HumanPlayer extends Player {
 
     @Override
     public boolean makeMove(GameBoard board) {
-        int size = board.getSize();
-        while(true) {
-            System.out.println("Введите ход (строка, столбец, горизонтально [1 - да, 0 - нет]): ");
+        while (true) {
             try {
+                System.out.println("Введите ход (строка, столбец, горизонтально [1 - да, 0 - нет]): ");
                 int row = scanner.nextInt();
                 int col = scanner.nextInt();
-                int isHorizontalInt = scanner.nextInt();
-                if (row < 0 || row > size || col < 0 || col >= size || (isHorizontalInt != 0 && isHorizontalInt != 1)) {
-                    System.out.println("Неверный ход. Попробуйте снова.");
-                    continue; // Пропускаем остаток итерации и просим ввести заново
-                }
-                boolean isHorizontal = isHorizontalInt == 1;
+                int horizontalInput = scanner.nextInt();
 
-                if (!board.drawEdge(row, col, isHorizontal)) {
-                    System.out.println("Неверный ход. Попробуйте снова.");
-                    continue; // Пропускаем остаток итерации и просим ввести заново
+                if (horizontalInput != 0 && horizontalInput != 1) {
+                    System.out.println("Неверное значение для горизонтально. Введите 1 (да) или 0 (нет).");
+                    continue;
                 }
-                int completedSquares = board.checkAndMarkSquares(row, col, isHorizontal, symbol);
-                if (completedSquares > 0) {
-                    System.out.println("Вы завершили " + completedSquares + " квадрат(ов)! Сделайте ещё ход.");
-                    return false; // Оставляем ход у текущего игрока
-                }
-                return true;
 
+                boolean isHorizontal = horizontalInput == 1;
+
+                if (board.drawEdge(row, col, isHorizontal)) {
+                    int completedSquares = board.checkAndMarkSquares(row, col, isHorizontal, symbol);
+                    if (completedSquares > 0) {
+                        System.out.println("Вы завершили " + completedSquares + " квадрат(ов)! Сделайте ещё ход.");
+                        return false;
+                    }
+                    return true;
+                } else {
+                    System.out.println("Неверный ход. Попробуйте снова.");
+                }
             } catch (InputMismatchException e) {
-                System.out.println("Неверный формат ввода. Попробуйте снова.");
-                scanner.next(); // Очистить некорректный ввод
+                System.out.println("Ошибка ввода. Пожалуйста, введите корректные данные.");
+                scanner.nextLine(); // Очистка ввода
             }
         }
     }
@@ -173,26 +168,6 @@ class BotPlayer extends Player {
     @Override
     public boolean makeMove(GameBoard board) {
         int size = board.getSize();
-
-        // 1. Поиск хода, завершающего квадрат
-        for (int row = 0; row <= size; row++) {
-            for (int col = 0; col < size; col++) {
-                for (int direction = 0; direction < 2; direction++) {
-                    boolean isHorizontal = direction == 1;
-                    if (canDrawEdge(board, row, col, isHorizontal)) {
-                        if (checkCompleteSquare(board, row, col, isHorizontal)) {
-                            if (board.drawEdge(row, col, isHorizontal)) {
-                                board.checkAndMarkSquares(row, col, isHorizontal, symbol);
-                                System.out.println("Бот завершил квадрат!");
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 2. Если нет завершающего хода, сделать случайный
         while (true) {
             int row = random.nextInt(size + 1);
             int col = random.nextInt(size);
@@ -201,52 +176,11 @@ class BotPlayer extends Player {
                 int completedSquares = board.checkAndMarkSquares(row, col, isHorizontal, symbol);
                 if (completedSquares > 0) {
                     System.out.println("Бот завершил " + completedSquares + " квадрат(ов)!");
-                    return false; // Оставляем ход у бота
+                    return false;
                 }
                 return true;
             }
         }
-    }
-
-    private boolean checkCompleteSquare(GameBoard board, int row, int col, boolean isHorizontal){
-        if (isHorizontal) {
-            if (row < board.getSize() && col < board.getSize() && isSquareCompleteBot(board, row, col)) {
-                return true;
-            }
-            if (row > 0 && col < board.getSize() && isSquareCompleteBot(board, row - 1, col)) {
-                return true;
-            }
-        } else {
-            if (col < board.getSize() && row < board.getSize() && isSquareCompleteBot(board, row, col)) {
-                return true;
-            }
-            if (col > 0 && row < board.getSize() && isSquareCompleteBot(board, row, col - 1)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean canDrawEdge(GameBoard board, int row, int col, boolean isHorizontal){
-        if (row == board.getSize() && col == board.getSize()) {
-            return false; // Нельзя рисовать в правой нижней точке
-        }
-
-        if (isHorizontal) {
-            if (row < 0 || row > board.getSize() || col < 0 || col >= board.getSize() || board.horizontalEdges[row][col]) {
-                return false;
-            }
-        } else {
-            if (row < 0 || row >= board.getSize() || col < 0 || col > board.getSize() || board.verticalEdges[row][col]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean isSquareCompleteBot(GameBoard board, int row, int col) {
-        return board.horizontalEdges[row][col] && board.horizontalEdges[row + 1][col]
-                && board.verticalEdges[row][col] && board.verticalEdges[row][col + 1];
     }
 }
 
@@ -256,43 +190,15 @@ public class DotsAndSquares {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Добро пожаловать в игру 'Точки и квадраты'!");
-        int size = 0;
-        while (true) {
-            System.out.print("Введите размер игрового поля (например, 5 для 5x5): ");
-            try {
-                size = scanner.nextInt();
-                if (size <= 1) {
-                    System.out.println("Размер поля должен быть больше 1.");
-                    continue;
-                }
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("Неверный формат ввода. Попробуйте снова.");
-                scanner.next();
-            }
-        }
-
+        System.out.print("Введите размер игрового поля (например, 5 для 5x5): ");
+        int size = scanner.nextInt();
 
         GameBoard board = new GameBoard(size);
 
-        int mode = 0;
-        while(true) {
-            System.out.println("Выберите режим игры:");
-            System.out.println("1. Человек против человека");
-            System.out.println("2. Человек против бота");
-            try{
-                mode = scanner.nextInt();
-                if (mode != 1 && mode != 2) {
-                    System.out.println("Неверный выбор режима. Попробуйте снова.");
-                    continue;
-                }
-                break;
-            }catch(InputMismatchException e){
-                System.out.println("Неверный формат ввода. Попробуйте снова.");
-                scanner.next();
-            }
-        }
-
+        System.out.println("Выберите режим игры:");
+        System.out.println("1. Человек против человека");
+        System.out.println("2. Человек против бота");
+        int mode = scanner.nextInt();
 
         Player player1 = new HumanPlayer('X', scanner);
         Player player2 = (mode == 1) ? new HumanPlayer('O', scanner) : new BotPlayer('O');
