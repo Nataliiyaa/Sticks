@@ -27,7 +27,7 @@ public class HumanPlayer extends Player {
 
                 boolean isHorizontal = horizontalInput == 1;
 
-                // Пробуем выполнить ход на оригинальном игровом поле
+                // Пробуем выполнить ход
                 if (board.drawEdge(row, col, isHorizontal)) {
                     int completedSquares = board.checkAndMarkSquares(row, col, isHorizontal, symbol);
                     if (completedSquares > 0) {

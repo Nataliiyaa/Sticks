@@ -59,8 +59,20 @@ public class DotsAndSquares {
                 System.out.println("Ничья!");
             }
 
+            // Добавляем проверку ввода для повтора игры
             System.out.println("Хотите сыграть ещё раз? (1 - Да, 0 - Нет): ");
-            playAgain = scanner.nextInt() == 1;
+            while (true) {
+                int input = scanner.nextInt();
+                if (input == 1) {
+                    playAgain = true;
+                    break;
+                } else if (input == 0) {
+                    playAgain = false;
+                    break;
+                } else {
+                    System.out.println("Неверный ввод. Введите 1 (Да) или 0 (Нет): ");
+                }
+            }
 
         } while (playAgain);
 

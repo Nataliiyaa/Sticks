@@ -13,20 +13,6 @@ public class GameBoard {
         this.squares = new char[size][size];
     }
 
-    public GameBoard copy() {
-        GameBoard copy = new GameBoard(this.size);
-        for (int i = 0; i <= size; i++) {
-            System.arraycopy(horizontalEdges[i], 0, copy.horizontalEdges[i], 0, size);
-        }
-        for (int i = 0; i < size; i++) {
-            System.arraycopy(verticalEdges[i], 0, copy.verticalEdges[i], 0, size + 1);
-        }
-        for (int i = 0; i < size; i++) {
-            System.arraycopy(squares[i], 0, copy.squares[i], 0, size);
-        }
-        return copy;
-    }
-
     public boolean drawEdge(int row, int col, boolean isHorizontal) {
         if (isHorizontal) {
             if (row < 0 || row > size || col < 0 || col >= size || horizontalEdges[row][col]) {
@@ -100,6 +86,20 @@ public class GameBoard {
         }
     }
 
+    public GameBoard copy() {
+        GameBoard copy = new GameBoard(size);
+        for (int i = 0; i <= size; i++) {
+            System.arraycopy(horizontalEdges[i], 0, copy.horizontalEdges[i], 0, size);
+        }
+        for (int i = 0; i < size; i++) {
+            System.arraycopy(verticalEdges[i], 0, copy.verticalEdges[i], 0, size + 1);
+        }
+        for (int i = 0; i < size; i++) {
+            System.arraycopy(squares[i], 0, copy.squares[i], 0, size);
+        }
+        return copy;
+    }
+
     public int getSize() {
         return size;
     }
@@ -108,4 +108,3 @@ public class GameBoard {
         return squares[row][col];
     }
 }
-
