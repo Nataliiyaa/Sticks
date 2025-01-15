@@ -18,10 +18,25 @@ public class GameWindow extends JFrame {
     }
 
     public void start() {
-        String sizeInput = JOptionPane.showInputDialog(this, "Введите размер игрового поля:");
-        int size = Integer.parseInt(sizeInput);
+        int rows, cols;
+        while (true) {
+            String sizeInput = JOptionPane.showInputDialog(this, "Введите количество строк и столбцов игрового поля через пробел (минимум 2x2): ");
+            String[] dimensions = sizeInput.split(" ");
+            try {
+                rows = Integer.parseInt(dimensions[0]);
+                cols = Integer.parseInt(dimensions[1]);
+            } catch (Exception e) {
+                System.out.println("Ошибка ввода. Убедитесь, что вы ввели два числа через пробел.");
+                continue;
+            }
+            if (rows >= 2 && cols >= 2) {
+                break;
+            } else {
+                System.out.println("Размеры игрового поля должны быть не менее 2x2. Попробуйте снова.");
+            }
+        }
 
-        board = new GameBoard(size);
+        board = new GameBoard(rows, cols);
         player1 = new HumanPlayer('X', null); // Управление мышью
         player2 = new BotPlayer('O');
         currentPlayer = player1;
@@ -46,19 +61,20 @@ public class GameWindow extends JFrame {
     }
 
     private void drawBoard(Graphics g) {
-        int size = board.getSize();
-        int cellSize = Math.min(getWidth(), getHeight()) / size;
+        int rows = board.getRows();
+        int cols = board.getCols();
+        int cellSize = Math.min(getWidth(), getHeight()) / Math.max(rows, cols);
 
         // Рисуем точки и линии
-        for (int i = 0; i <= size; i++) {
-            for (int j = 0; j <= size; j++) {
+        for (int i = 0; i <= rows; i++) {
+            for (int j = 0; j <= cols; j++) {
                 g.fillOval(j * cellSize - 3, i * cellSize - 3, 6, 6);
             }
         }
 
         // Рисуем завершённые квадраты
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
                 char owner = board.getSquareOwner(i, j);
                 if (owner != '\u0000') {
                     g.drawString(String.valueOf(owner), j * cellSize + cellSize / 2, i * cellSize + cellSize / 2);

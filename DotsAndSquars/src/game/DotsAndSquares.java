@@ -6,48 +6,30 @@ import javax.swing.*;
 
 public class DotsAndSquares {
     public static void main(String[] args) {
-//        // Выбор интерфейса
-//        String[] options = {"Консоль", "Оконный интерфейс"};
-//        int choice = JOptionPane.showOptionDialog(
-//                null,
-//                "Как вы хотите играть?",
-//                "Выбор интерфейса",
-//                JOptionPane.DEFAULT_OPTION,
-//                JOptionPane.QUESTION_MESSAGE,
-//                null,
-//                options,
-//                options[0]
-//        );
-//
-//        if (choice == 0) {
-//            // Консольная версия
-//            playInConsole();
-//        } else if (choice == 1) {
-//            // Графическая версия
-//            SwingUtilities.invokeLater(() -> new GameWindow().start());
-//        } else {
-//            System.out.println("Игра завершена.");
-//        }
-//    }
-//
-//    private static void playInConsole() {
         Scanner scanner = new Scanner(System.in);
         boolean playAgain;
 
         do {
             System.out.println("Добро пожаловать в игру 'Точки и квадраты'!");
-            int size;
+            int rows, cols;
             while (true) {
-                System.out.print("Введите размер игрового поля (например, 5 для 5x5, минимум 2): ");
-                size = scanner.nextInt();
-                if (size >= 2) {
-                    break; // Выходим из цикла, если размер корректен
+                System.out.print("Введите количество строк и столбцов игрового поля через пробел (минимум 2x2): ");
+                String[] dimensions = scanner.nextLine().split(" ");
+                try {
+                    rows = Integer.parseInt(dimensions[0]);
+                    cols = Integer.parseInt(dimensions[1]);
+                } catch (Exception e) {
+                    System.out.println("Ошибка ввода. Убедитесь, что вы ввели два числа через пробел.");
+                    continue;
+                }
+                if (rows >= 2 && cols >= 2) {
+                    break;
                 } else {
-                    System.out.println("Размер игрового поля должен быть не менее 2. Попробуйте снова.");
+                    System.out.println("Размеры игрового поля должны быть не менее 2x2. Попробуйте снова.");
                 }
             }
 
-            GameBoard board = new GameBoard(size);
+            GameBoard board = new GameBoard(rows, cols);
 
             System.out.println("Выберите режим игры:");
             System.out.println("1. Человек против человека");
@@ -73,8 +55,8 @@ public class DotsAndSquares {
 
             int scorePlayer1 = 0;
             int scorePlayer2 = 0;
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
                     if (board.getSquareOwner(i, j) == player1.getSymbol()) {
                         scorePlayer1++;
                     } else if (board.getSquareOwner(i, j) == player2.getSymbol()) {
