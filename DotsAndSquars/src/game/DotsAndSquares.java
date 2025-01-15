@@ -14,7 +14,7 @@ public class DotsAndSquares {
             int rows, cols;
             while (true) {
                 System.out.print("Введите количество строк и столбцов игрового поля через пробел (минимум 2x2): ");
-                String[] dimensions = scanner.nextLine().split(" ");
+                String[] dimensions = scanner.nextLine().split("\\s+");
                 try {
                     rows = Integer.parseInt(dimensions[0]);
                     cols = Integer.parseInt(dimensions[1]);
@@ -35,6 +35,7 @@ public class DotsAndSquares {
             System.out.println("1. Человек против человека");
             System.out.println("2. Человек против бота");
             int mode = scanner.nextInt();
+            String input = scanner.nextLine().trim();
 
             Player player1 = new HumanPlayer('X', scanner);
             Player player2 = (mode == 1) ? new HumanPlayer('O', scanner) : new BotPlayer('O');

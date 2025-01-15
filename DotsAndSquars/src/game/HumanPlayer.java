@@ -15,10 +15,18 @@ public class HumanPlayer extends Player {
     public boolean makeMove(GameBoard board) {
         while (true) {
             try {
-                System.out.println("Введите ход (строка, столбец, горизонтально [1 - да, 0 - нет]): ");
-                int row = scanner.nextInt();
-                int col = scanner.nextInt();
-                int horizontalInput = scanner.nextInt();
+                System.out.println("Введите ход (строка, столбец, горизонтально [1 - да, 0 - нет], разделённые пробелом): ");
+                String input = scanner.nextLine();
+                String[] parts = input.trim().split("\\s+");
+
+                if (parts.length != 3) {
+                    System.out.println("Ошибка ввода. Убедитесь, что вы ввели три значения, разделённые пробелами.");
+                    continue;
+                }
+
+                int row = Integer.parseInt(parts[0]);
+                int col = Integer.parseInt(parts[1]);
+                int horizontalInput = Integer.parseInt(parts[2]);
 
                 if (horizontalInput != 0 && horizontalInput != 1) {
                     System.out.println("Неверное значение для горизонтально. Введите 1 (да) или 0 (нет).");
@@ -38,9 +46,8 @@ public class HumanPlayer extends Player {
                 } else {
                     System.out.println("Неверный ход. Попробуйте снова.");
                 }
-            } catch (InputMismatchException e) {
-                System.out.println("Ошибка ввода. Пожалуйста, введите корректные данные.");
-                scanner.nextLine(); // Очистка ввода
+            } catch (NumberFormatException e) {
+                System.out.println("Ошибка ввода. Пожалуйста, введите три целых числа, разделённых пробелами.");
             }
         }
     }
