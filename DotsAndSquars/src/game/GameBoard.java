@@ -1,6 +1,6 @@
 package game;
 
-public class GameBoard {
+public class GameBoard implements Board{
     private final int rows;
     private final int cols;
     private final boolean[][] horizontalEdges;
@@ -17,10 +17,12 @@ public class GameBoard {
         this.completedSquaresCount = 0;
     }
 
+    @Override
     public boolean[][] getHorizontalEdges() {
         return horizontalEdges;
     }
 
+    @Override
     public boolean[][] getVerticalEdges() {
         return verticalEdges;
     }
@@ -80,36 +82,6 @@ public class GameBoard {
 
     public boolean isFull() {
         return completedSquaresCount == rows * cols;
-    }
-
-    public void printBoard() {
-        for (int i = 0; i <= rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                System.out.print("+" + (i <= rows && horizontalEdges[i][j] ? "---" : "   "));
-            }
-            System.out.println("+");
-            if (i < rows) {
-                for (int j = 0; j <= cols; j++) {
-                    System.out.print((j <= cols && verticalEdges[i][j] ? "|" : " ") + " " + (j < cols && squares[i][j] != '\u0000' ? squares[i][j] : " ") + " ");
-                }
-                System.out.println();
-            }
-        }
-    }
-
-    public GameBoard copy() {
-        GameBoard copy = new GameBoard(rows, cols);
-        for (int i = 0; i <= rows; i++) {
-            System.arraycopy(horizontalEdges[i], 0, copy.horizontalEdges[i], 0, cols);
-        }
-        for (int i = 0; i < rows; i++) {
-            System.arraycopy(verticalEdges[i], 0, copy.verticalEdges[i], 0, cols + 1);
-        }
-        for (int i = 0; i < rows; i++) {
-            System.arraycopy(squares[i], 0, copy.squares[i], 0, cols);
-        }
-        copy.completedSquaresCount = this.completedSquaresCount;
-        return copy;
     }
 
     public int getRows() {

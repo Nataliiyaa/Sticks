@@ -30,27 +30,32 @@ public class DotsAndSquares {
             }
 
             GameBoard board = new GameBoard(rows, cols);
+            GameRenderer renderer = new ConsoleRenderer();
+            GameMediator mediator = new GameLogicMediator(board, renderer);
 
             System.out.println("Выберите режим игры:");
             System.out.println("1. Человек против человека");
             System.out.println("2. Человек против бота");
             int mode = scanner.nextInt();
-            String input = scanner.nextLine().trim();
+            scanner.nextLine(); // Считываем символ новой строки
 
             Player player1 = new HumanPlayer('X', scanner);
             Player player2 = (mode == 1) ? new HumanPlayer('O', scanner) : new BotPlayer('O');
 
             Player currentPlayer = player1;
 
+            renderer.render(board);
+
             while (!board.isFull()) {
-                board.printBoard();
                 System.out.println("Ход игрока " + currentPlayer.getSymbol());
-                if (currentPlayer.makeMove(board)) {
+                if (currentPlayer.makeMove(mediator)) {
+                    if (board.isFull()) {
+                        break; // Выходим из цикла, если поле заполнено
+                    }
                     currentPlayer = (currentPlayer == player1) ? player2 : player1;
                 }
             }
 
-            board.printBoard();
             System.out.println("Игра завершена!");
             System.out.println("Подсчёт очков...");
 

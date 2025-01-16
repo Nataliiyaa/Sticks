@@ -11,7 +11,7 @@ public abstract class Player {
         return symbol;
     }
 
-    public abstract boolean makeMove(GameBoard board);
+    public abstract boolean makeMove(GameMediator mediator);
 }
 
 

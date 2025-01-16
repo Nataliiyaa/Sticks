@@ -12,7 +12,7 @@ public class HumanPlayer extends Player {
     }
 
     @Override
-    public boolean makeMove(GameBoard board) {
+    public boolean makeMove(GameMediator mediator) {
         while (true) {
             try {
                 System.out.println("Введите ход (строка, столбец, горизонтально [1 - да, 0 - нет], разделённые пробелом): ");
@@ -35,16 +35,9 @@ public class HumanPlayer extends Player {
 
                 boolean isHorizontal = horizontalInput == 1;
 
-                // Пробуем выполнить ход
-                if (board.drawEdge(row, col, isHorizontal)) {
-                    int completedSquares = board.checkAndMarkSquares(row, col, isHorizontal, symbol);
-                    if (completedSquares > 0) {
-                        System.out.println("Вы завершили " + completedSquares + " квадрат(ов)! Сделайте ещё ход.");
-                        return false; // Игрок делает ещё один ход
-                    }
-                    return true; // Ход передаётся следующему игроку
-                } else {
-                    System.out.println("Неверный ход. Попробуйте снова.");
+                // Пробуем выполнить ход через посредника
+                if (mediator.makeMove(row, col, isHorizontal, this)) {
+                    return true; // Ход выполнен, передаётся следующему игроку
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Ошибка ввода. Пожалуйста, введите три целых числа, разделённых пробелами.");
