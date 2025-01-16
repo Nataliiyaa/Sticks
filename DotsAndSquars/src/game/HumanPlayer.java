@@ -1,12 +1,11 @@
 package game;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class HumanPlayer extends Player {
     private final Scanner scanner;
 
-    public HumanPlayer(char symbol, Scanner scanner) {
+    public HumanPlayer(PlayerSymbol symbol, Scanner scanner) {
         super(symbol);
         this.scanner = scanner;
     }

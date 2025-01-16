@@ -1,11 +1,11 @@
 package game;
 
-public class GameBoard implements Board{
+public class GameBoard {
     private final int rows;
     private final int cols;
     private final boolean[][] horizontalEdges;
     private final boolean[][] verticalEdges;
-    private final char[][] squares;
+    private final SquareState[][] squares;
     private int completedSquaresCount;
 
     public GameBoard(int rows, int cols) {
@@ -13,8 +13,14 @@ public class GameBoard implements Board{
         this.cols = cols;
         this.horizontalEdges = new boolean[rows + 1][cols];
         this.verticalEdges = new boolean[rows][cols + 1];
-        this.squares = new char[rows][cols];
+        this.squares = new SquareState[rows][cols];
         this.completedSquaresCount = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                squares[i][j] = new SquareState();
+            }
+        }
     }
 
     public boolean[][] getHorizontalEdges() {
@@ -25,8 +31,8 @@ public class GameBoard implements Board{
         return verticalEdges;
     }
 
-    public char[][] getSquares() {
-        return squares;
+    public SquareState getSquareState(int row, int col) {
+        return squares[row][col];
     }
 
     public int getCompletedSquaresCount() {
@@ -48,27 +54,29 @@ public class GameBoard implements Board{
         return true;
     }
 
-    public int checkAndMarkSquares(int row, int col, boolean isHorizontal, char playerSymbol) {
+    public int checkAndMarkSquares(int row, int col, boolean isHorizontal, SquareState playerSymbol) {
         int completedSquares = 0;
+
         if (isHorizontal) {
             if (row < rows && col < cols && isSquareComplete(row, col)) {
-                squares[row][col] = playerSymbol;
+                squares[row][col].setOwner(playerSymbol.getOwner());
                 completedSquares++;
             }
             if (row > 0 && col < cols && isSquareComplete(row - 1, col)) {
-                squares[row - 1][col] = playerSymbol;
+                squares[row - 1][col].setOwner(playerSymbol.getOwner());
                 completedSquares++;
             }
         } else {
-            if (col < cols && row < rows && isSquareComplete(row, col)) {
-                squares[row][col] = playerSymbol;
+            if (row < rows && col < cols && isSquareComplete(row, col)) {
+                squares[row][col].setOwner(playerSymbol.getOwner());
                 completedSquares++;
             }
             if (col > 0 && row < rows && isSquareComplete(row, col - 1)) {
-                squares[row][col - 1] = playerSymbol;
+                squares[row][col - 1].setOwner(playerSymbol.getOwner());
                 completedSquares++;
             }
         }
+
         completedSquaresCount += completedSquares;
         return completedSquares;
     }
@@ -89,8 +97,5 @@ public class GameBoard implements Board{
     public int getCols() {
         return cols;
     }
-
-    public char getSquareOwner(int row, int col) {
-        return squares[row][col];
-    }
 }
+

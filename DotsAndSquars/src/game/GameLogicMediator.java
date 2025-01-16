@@ -11,55 +11,42 @@ public class GameLogicMediator implements GameMediator {
         this.renderer = renderer;
     }
 
+    public GameBoard getBoard() {
+        return board;
+    }
+
     @Override
     public boolean makeMove(int row, int col, boolean isHorizontal, Player player) {
-        if (board.drawEdge(row, col, isHorizontal)) {
-            int completedSquares = board.checkAndMarkSquares(row, col, isHorizontal, player.getSymbol());
+        SquareState squareState = new SquareState();
+        squareState.setOwner(player.getSymbol());
 
-            // Перерисовать поле после хода
+        if (board.drawEdge(row, col, isHorizontal)) {
+            int completedSquares = board.checkAndMarkSquares(row, col, isHorizontal, squareState);
+
             renderer.render(board);
 
             if (completedSquares > 0) {
-                System.out.println("Игрок " + player.getSymbol() + " завершил " + completedSquares + " квадрат(ов)!");
+                System.out.println("Игрок " + player.getSymbol() + " завершил " + completedSquares + " квадрат(ов)! Дополнительный ход.");
+                if (board.isFull()) {
+                    return true;
+                }
                 return false; // Игрок делает ещё один ход
             }
             return true; // Ход передаётся следующему игроку
-        } else {
+        }
+
+        if (player instanceof HumanPlayer) {
             System.out.println("Неверный ход. Попробуйте снова.");
-            return false; // Ход не выполнен
         }
+        return false; // Ход не выполнен
+    }
+    @Override
+    public int getBoardRows() {
+        return board.getRows();
     }
 
-    public List<Move> getAvailableMoves() {
-        List<Move> availableMoves = new ArrayList<>();
-
-        for (int row = 0; row <= board.getRows(); row++) {
-            for (int col = 0; col < board.getCols(); col++) {
-                if (row <= board.getRows() && !board.getHorizontalEdges()[row][col]) {
-                    availableMoves.add(new Move(row, col, true));
-                }
-            }
-        }
-
-        for (int row = 0; row < board.getRows(); row++) {
-            for (int col = 0; col <= board.getCols(); col++) {
-                if (col <= board.getCols() && !board.getVerticalEdges()[row][col]) {
-                    availableMoves.add(new Move(row, col, false));
-                }
-            }
-        }
-
-        return availableMoves;
-    }
-
-    static class Move {
-        int row, col;
-        boolean isHorizontal;
-
-        Move(int row, int col, boolean isHorizontal) {
-            this.row = row;
-            this.col = col;
-            this.isHorizontal = isHorizontal;
-        }
+    @Override
+    public int getBoardCols() {
+        return board.getCols();
     }
 }

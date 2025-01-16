@@ -37,8 +37,8 @@ public class GameWindow extends JFrame {
         }
 
         board = new GameBoard(rows, cols);
-        player1 = new HumanPlayer('X', null); // Управление мышью
-        player2 = new BotPlayer('O');
+        player1 = new HumanPlayer(PlayerSymbol.X, null); // Управление мышью
+        player2 = new BotPlayer(PlayerSymbol.O);
         currentPlayer = player1;
 
         JPanel panel = new JPanel() {
@@ -73,14 +73,14 @@ public class GameWindow extends JFrame {
         }
 
         // Рисуем завершённые квадраты
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                char owner = board.getSquareOwner(i, j);
-                if (owner != '\u0000') {
-                    g.drawString(String.valueOf(owner), j * cellSize + cellSize / 2, i * cellSize + cellSize / 2);
-                }
-            }
-        }
+//        for (int i = 0; i < rows; i++) {
+//            for (int j = 0; j < cols; j++) {
+//                char owner = board.getSquareOwner(i, j);
+//                if (owner != '\u0000') {
+//                    g.drawString(String.valueOf(owner), j * cellSize + cellSize / 2, i * cellSize + cellSize / 2);
+//                }
+//            }
+//        }
     }
 
     private void handleMouseClick(int x, int y) {

@@ -10,7 +10,7 @@ public class ConsoleRenderer implements GameRenderer {
             System.out.println("+");
             if (i < board.getRows()) {
                 for (int j = 0; j <= board.getCols(); j++) {
-                    System.out.print((j <= board.getCols() && board.getVerticalEdges()[i][j] ? "|" : " ") + " " + (j < board.getCols() && board.getSquares()[i][j] != '\u0000' ? board.getSquares()[i][j] : " ") + " ");
+                    System.out.print((j <= board.getCols() && board.getVerticalEdges()[i][j] ? "|" : " ") + " " + (j < board.getCols() && board.getSquareState(i, j).getOwner() != PlayerSymbol.NONE ? board.getSquareState(i, j).getOwner() : " ") + " ");
                 }
                 System.out.println();
             }

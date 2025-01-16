@@ -1,33 +1,33 @@
 package game;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class BotPlayer extends Player {
     private final Random random;
 
-    public BotPlayer(char symbol) {
+    public BotPlayer(PlayerSymbol symbol) {
         super(symbol);
         this.random = new Random();
     }
 
     @Override
     public boolean makeMove(GameMediator mediator) {
+        int maxRows = mediator.getBoardRows(); // Общее число строк
+        int maxCols = mediator.getBoardCols(); // Общее число столбцов
+
         while (true) {
-            List<GameLogicMediator.Move> availableMoves = ((GameLogicMediator) mediator).getAvailableMoves();
+            // Генерация случайных координат
+            int row = random.nextInt(maxRows + 1); // +1 для горизонтальных линий
+            int col = random.nextInt(maxCols + 1); // +1 для вертикальных линий
+            boolean isHorizontal = random.nextBoolean(); // Определяем горизонтальную/вертикальную линию
 
-            if (availableMoves.isEmpty()) {
-                System.out.println("Нет доступных ходов для бота.");
-                return true; // Завершить ход, если нет доступных ходов
+            // Пытаемся сделать ход
+            if (mediator.makeMove(row, col, isHorizontal, this)) {
+                return true; // Успешный ход, передаём ход следующему игроку
             }
 
-            int randomIndex = random.nextInt(availableMoves.size());
-            GameLogicMediator.Move move = availableMoves.get(randomIndex);
-
-            if (mediator.makeMove(move.row, move.col, move.isHorizontal, this)) {
-                return true; // Ход выполнен, передаётся следующему игроку
-            }
+            // Если ход не успешен, повторяем генерацию
         }
     }
 }

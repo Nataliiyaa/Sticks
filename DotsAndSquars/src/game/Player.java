@@ -1,13 +1,13 @@
 package game;
 
 public abstract class Player {
-    protected final char symbol;
+    protected final PlayerSymbol symbol;
 
-    public Player(char symbol) {
+    public Player(PlayerSymbol symbol) {
         this.symbol = symbol;
     }
 
-    public char getSymbol() {
+    public PlayerSymbol getSymbol() {
         return symbol;
     }
 

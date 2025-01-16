@@ -39,23 +39,28 @@ public class DotsAndSquares {
             int mode = scanner.nextInt();
             scanner.nextLine(); // Считываем символ новой строки
 
-            Player player1 = new HumanPlayer('X', scanner);
-            Player player2 = (mode == 1) ? new HumanPlayer('O', scanner) : new BotPlayer('O');
+            Player player1 = new HumanPlayer(PlayerSymbol.X, scanner);
+            Player player2 = (mode == 1) ? new HumanPlayer(PlayerSymbol.O, scanner) : new BotPlayer(PlayerSymbol.O);
 
             Player currentPlayer = player1;
 
             renderer.render(board);
-
-            while (!board.isFull()) {
+            while (true) {
                 System.out.println("Ход игрока " + currentPlayer.getSymbol());
-                if (currentPlayer.makeMove(mediator)) {
-                    if (board.isFull()) {
-                        break; // Выходим из цикла, если поле заполнено
-                    }
+                boolean mustSwitchTurn = currentPlayer.makeMove(mediator);
+
+                // Проверка завершения игры после каждого хода
+                if (board.isFull()) {
+                    break; // Игра завершена
+                }
+
+                // Если ход завершён, передать его следующему игроку
+                if (mustSwitchTurn) {
                     currentPlayer = (currentPlayer == player1) ? player2 : player1;
                 }
             }
 
+            renderer.render(board);
             System.out.println("Игра завершена!");
             System.out.println("Подсчёт очков...");
 
@@ -63,30 +68,33 @@ public class DotsAndSquares {
             int scorePlayer2 = 0;
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
-                    if (board.getSquareOwner(i, j) == player1.getSymbol()) {
+                    if (board.getSquareState(i, j).getOwner() == player1.getSymbol()) {
                         scorePlayer1++;
-                    } else if (board.getSquareOwner(i, j) == player2.getSymbol()) {
+                    } else if (board.getSquareState(i, j).getOwner() == player2.getSymbol()) {
                         scorePlayer2++;
                     }
                 }
             }
 
-            System.out.println("Очки игрока X: " + scorePlayer1);
-            System.out.println("Очки игрока O: " + scorePlayer2);
+            System.out.println("Результаты:");
+            System.out.println("Игрок " + player1.getSymbol() + ": " + scorePlayer1 + " очков");
+            System.out.println("Игрок " + player2.getSymbol() + ": " + scorePlayer2 + " очков");
 
             if (scorePlayer1 > scorePlayer2) {
-                System.out.println("Победил игрок X!");
+                System.out.println("Победил игрок " + player1.getSymbol() + "!");
             } else if (scorePlayer2 > scorePlayer1) {
-                System.out.println("Победил игрок O!");
+                System.out.println("Победил игрок " + player2.getSymbol() + "!");
             } else {
                 System.out.println("Ничья!");
             }
 
-            System.out.println("Хотите сыграть ещё раз? (1 - Да, 0 - Нет): ");
-            playAgain = scanner.nextInt() == 1;
+            System.out.print("Хотите сыграть ещё раз? (да/нет): ");
+            String response = scanner.nextLine().trim().toLowerCase();
+            playAgain = response.equals("да") || response.equals("yes");
 
         } while (playAgain);
 
         System.out.println("Спасибо за игру!");
+        scanner.close();
     }
 }
