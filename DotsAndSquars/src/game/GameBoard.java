@@ -17,12 +17,10 @@ public class GameBoard implements Board{
         this.completedSquaresCount = 0;
     }
 
-    @Override
     public boolean[][] getHorizontalEdges() {
         return horizontalEdges;
     }
 
-    @Override
     public boolean[][] getVerticalEdges() {
         return verticalEdges;
     }
