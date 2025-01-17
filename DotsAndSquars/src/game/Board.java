@@ -4,5 +4,5 @@ public interface Board {
     int getRows();
     int getCols();
     boolean isFull();
-    char getSquareOwner(int row, int col);
+    SquareState getSquareState(int row, int col);
 }

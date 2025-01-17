@@ -4,11 +4,11 @@ import java.util.*;
 
 public class GameLogicMediator implements GameMediator {
     private final GameBoard board;
-    private final GameRenderer renderer;
+    private final GameUI ui;
 
-    public GameLogicMediator(GameBoard board, GameRenderer renderer) {
+    public GameLogicMediator(GameBoard board, GameUI ui) {
         this.board = board;
-        this.renderer = renderer;
+        this.ui = ui;
     }
 
     public GameBoard getBoard() {
@@ -23,23 +23,21 @@ public class GameLogicMediator implements GameMediator {
         if (board.drawEdge(row, col, isHorizontal)) {
             int completedSquares = board.checkAndMarkSquares(row, col, isHorizontal, squareState);
 
-            renderer.render(board);
+            ui.displayBoard(board);
 
             if (completedSquares > 0) {
-                System.out.println("Игрок " + player.getSymbol() + " завершил " + completedSquares + " квадрат(ов)! Дополнительный ход.");
-                if (board.isFull()) {
-                    return true;
-                }
-                return false; // Игрок делает ещё один ход
+                ui.displayMessage("Игрок " + player.getSymbol() + " завершил " + completedSquares + " квадрат(ов)! Дополнительный ход.");
+                return board.isFull(); // Игрок делает ещё один ход, если поле не заполнено
             }
             return true; // Ход передаётся следующему игроку
         }
 
         if (player instanceof HumanPlayer) {
-            System.out.println("Неверный ход. Попробуйте снова.");
+            ui.displayMessage("Неверный ход. Попробуйте снова.");
         }
         return false; // Ход не выполнен
     }
+
     @Override
     public int getBoardRows() {
         return board.getRows();
@@ -48,5 +46,36 @@ public class GameLogicMediator implements GameMediator {
     @Override
     public int getBoardCols() {
         return board.getCols();
+    }
+
+    /**
+     * Подсчёт очков для игроков.
+     */
+    public void calculateAndDisplayScores(Player player1, Player player2) {
+        int scorePlayer1 = 0;
+        int scorePlayer2 = 0;
+
+        for (int i = 0; i < board.getRows(); i++) {
+            for (int j = 0; j < board.getCols(); j++) {
+                PlayerSymbol owner = board.getSquareState(i, j).getOwner();
+                if (owner == player1.getSymbol()) {
+                    scorePlayer1++;
+                } else if (owner == player2.getSymbol()) {
+                    scorePlayer2++;
+                }
+            }
+        }
+
+        ui.displayMessage("Результаты:");
+        ui.displayMessage("Игрок " + player1.getSymbol() + ": " + scorePlayer1 + " очков");
+        ui.displayMessage("Игрок " + player2.getSymbol() + ": " + scorePlayer2 + " очков");
+
+        if (scorePlayer1 > scorePlayer2) {
+            ui.displayMessage("Победил игрок " + player1.getSymbol() + "!");
+        } else if (scorePlayer2 > scorePlayer1) {
+            ui.displayMessage("Победил игрок " + player2.getSymbol() + "!");
+        } else {
+            ui.displayMessage("Ничья!");
+        }
     }
 }

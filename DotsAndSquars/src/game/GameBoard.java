@@ -1,6 +1,6 @@
 package game;
 
-public class GameBoard {
+public class GameBoard implements Board{
     private final int rows;
     private final int cols;
     private final boolean[][] horizontalEdges;
